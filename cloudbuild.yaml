@@ -1,0 +1,7 @@
+steps:
+#  Step 1: Run the tests
+- name: 'gcr.io/cloud-builders/python'
+  args: ['pytest', '-v']
+# Step 2: Deploy to Google Cloud Functions
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['functions', 'deploy', 'getCount', '--trigger-http', '--runtime', 'python39', '--allow-unauthenticated']
