@@ -1,4 +1,4 @@
-"""This module handles Firestore operations and Flask request processing."""
+"""This module handles Firestore  operations and Flask request processing."""
 
 import logging
 from typing import Tuple
