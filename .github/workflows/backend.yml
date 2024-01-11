@@ -1,0 +1,56 @@
+# Name of the workflow
+name: Backend CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  Test:
+    name: Static Code Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Pylint Tests
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+          pylint backend/*.py 
+
+  Deploy:
+    name: Infra deployment
+    runs-on: ubuntu-latest
+    needs: Test
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      
+      - name: Install zip
+        run: sudo apt-get install -y zip
+
+      - name: Prepare function deployment
+        id: prep
+        run: |
+          pushd backend 
+          zip -r main.zip .
+          file_name="main_$(md5sum main.zip | awk '{print $1}').zip"
+          echo "file_name=${file_name}" >> $GITHUB_ENV
+          mv main.zip "${file_name}"
+          popd
+
+      - name: Upload to GCS
+        env:
+            GCP_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+        run: |
+            echo "${GCP_CREDENTIALS}" | gcloud auth activate-service-account --key-file=-
+            gsutil cp backend/${{ env.file_name }} gs://cloudcv_function_vulcu

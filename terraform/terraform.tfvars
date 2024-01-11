@@ -1,0 +1,5 @@
+project         = "crafty-campaign-401215"
+region          = "us-central1"
+# gcp_credentials = "<<YOUR_GCP_CREDENTIALS>>"
+bucket_name     = "cloudcv_function"
+zip_file        = "my-cloud-function.zip"
