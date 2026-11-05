@@ -1,56 +1,51 @@
-# Name of the workflow
 name: Backend CI/CD Pipeline
 
 on:
   push:
-    branches:
-      - master
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  Test:
-    name: Static Code Analysis
+  test:
+    name: Static code analysis
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v5
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
+      - uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version: '3.12'
 
-      - name: Pylint Tests
+      - name: Pylint
         run: |
           python -m pip install --upgrade pip
           pip install -r backend/requirements.txt
-          pylint backend/*.py 
+          pylint backend/*.py
 
-  Deploy:
-    name: Infra deployment
+  deploy:
+    name: Upload function package to GCS
     runs-on: ubuntu-latest
-    needs: Test
+    needs: test
+    # The GCP project has been decommissioned: deployment runs only when started manually.
+    if: github.event_name == 'workflow_dispatch'
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v5
 
-      
-      - name: Install zip
-        run: sudo apt-get install -y zip
-
-      - name: Prepare function deployment
-        id: prep
+      - name: Prepare function package
         run: |
-          pushd backend 
-          zip -r main.zip .
+          cd backend
+          zip -r main.zip . -x '*.zip'
           file_name="main_$(md5sum main.zip | awk '{print $1}').zip"
-          echo "file_name=${file_name}" >> $GITHUB_ENV
+          echo "file_name=${file_name}" >> "$GITHUB_ENV"
           mv main.zip "${file_name}"
-          popd
 
       - name: Upload to GCS
         env:
-            GCP_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+          GCP_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
         run: |
-            echo "${GCP_CREDENTIALS}" | gcloud auth activate-service-account --key-file=-
-            gsutil cp backend/${{ env.file_name }} gs://cloudcv_function_vulcu
+          echo "${GCP_CREDENTIALS}" | gcloud auth activate-service-account --key-file=-
+          gsutil cp "backend/${{ env.file_name }}" gs://cloudcv_function_vulcu
