@@ -158,3 +158,6 @@ Thumbs.db
 *.swp
 *.swo
 *.sass-cache
+
+# Build artifacts
+*.zip

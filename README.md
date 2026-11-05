@@ -1,5 +1,10 @@
 # Google Cloud Platform (GCP) Resume Challenge
 
+![Backend CI](https://github.com/mvulcu/backend_CVcloud/actions/workflows/backend.yml/badge.svg)
+
+> **Status:** completed project (2023–2024). The GCP project and the live site have been decommissioned; the code, Terraform and CI configuration are kept as a reference.
+> Frontend: [frontend_CVcloud](https://github.com/mvulcu/frontend_CVcloud)
+
 Welcome to my GCP Resume Challenge project! This is a serverless resume, showcasing my skills and experiences in cloud technologies, particularly within the Google Cloud Platform. Here, I'll take you through what I did, how I did it, and why I made certain decisions both in terms of what to do and how to execute it.
 
 ## Overview
@@ -60,8 +65,6 @@ This project involves the creation of a serverless, dynamic resume hosted on GCP
 ## Conclusion
 
 This project is more than a digital resume; it's a reflection of my skills in cloud-based development and my understanding of modern web technologies. It demonstrates my ability to leverage GCP's serverless architecture to build a scalable, responsive web application.
-
-Feel free to explore the site and see how the visitor count changes with each visit, which is a small yet powerful demonstration of real-time data processing and serverless backend capabilities.
 
 ---
 
